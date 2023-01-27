@@ -1,4 +1,5 @@
 import meow from "meow";
+import clipboard from "clipboardy";
 import {
   CharacterValues,
   charactersSeparator,
@@ -59,12 +60,15 @@ const cli = meow(
     --fill, -f  The character to use for filled spaces
 
 	Examples
-	  $ foo "hi" --blank ⬛️ --fill ⬜️
-	  ⬛️⬜️⬛️⬜️⬛️⬜️⬜️⬜️⬛️
-    ⬛️⬜️⬛️⬜️⬛️⬛️⬜️⬛️⬛️
-    ⬛️⬜️⬜️⬜️⬛️⬛️⬜️⬛️⬛️
-    ⬛️⬜️⬛️⬜️⬛️⬛️⬜️⬛️⬛️
-    ⬛️⬜️⬛️⬜️⬛️⬜️⬜️⬜️⬛️
+	  $ s-banner "hi" --blank ⬛️ --fill ⬜️
+⬛️⬜️⬛️⬜️⬛️⬜️⬜️⬜️⬛️
+⬛️⬜️⬛️⬜️⬛️⬛️⬜️⬛️⬛️
+⬛️⬜️⬜️⬜️⬛️⬛️⬜️⬛️⬛️
+⬛️⬜️⬛️⬜️⬛️⬛️⬜️⬛️⬛️
+⬛️⬜️⬛️⬜️⬛️⬜️⬜️⬜️⬛️
+
+	  $ s-banner "hi" --blank ⬛️ --fill ⬜️ --clipboard
+
 `,
   {
     importMeta: import.meta,
@@ -79,6 +83,10 @@ const cli = meow(
         alias: "f",
         required: true,
       },
+      clipboard: {
+        type: "boolean",
+        alias: "c",
+      },
     },
   }
 );
@@ -88,4 +96,9 @@ if (cli.input.length !== 1) {
   process.exit(0);
 }
 
-console.log(makeBanner(cli.input[0], cli.flags.blank, cli.flags.fill));
+const output = makeBanner(cli.input[0], cli.flags.blank, cli.flags.fill);
+
+if (cli.flags.clipboard) {
+  clipboard.writeSync(output);
+  console.log("Banner copied to clipboard");
+} else console.log(output);
